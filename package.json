@@ -14,7 +14,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "VSCODEEXTENSIONPRACTICE.helloWorld",
+        "command": "GemiStudi.helloWorld",
         "title": "Hello World"
       }
     ]
