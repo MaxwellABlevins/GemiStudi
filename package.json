@@ -1,5 +1,5 @@
 {
-  "name": "Practice",
+  "name": "GemiStudi",
   "displayName": "ExtensionPractice",
   "description": "First Extension for practice and familiarity",
   "version": "0.0.1",
@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [],
-  "main": "./out/extension.js",
+  "main": "extension.ts",
   "contributes": {
     "commands": [
       {
