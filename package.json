@@ -16,6 +16,10 @@
       {
         "command": "GemiStudi.helloWorld",
         "title": "Hello World"
+      }, 
+      {
+        "command": "GemiStudi.openPythonLearning",
+        "title": "Open Python Learning Environment"
       }
     ]
   },

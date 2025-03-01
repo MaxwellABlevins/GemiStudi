@@ -38,12 +38,16 @@ exports.deactivate = deactivate;
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = __importStar(require("vscode"));
+const pythonLearningProvider_1 = require("./webview/pythonLearningProvider");
+//import { open } from 'fs';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 function activate(context) {
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "Practice" is now active!');
+    //Create an of PythonLearningProvider
+    const pythonLearningProvider = new pythonLearningProvider_1.PythonLearningProvider(context);
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
@@ -52,7 +56,11 @@ function activate(context) {
         // Display a message box to the user
         vscode.window.showInformationMessage('Hello World from ExtensionPractice!');
     });
-    context.subscriptions.push(disposable);
+    // Register a command to open the Python Learning panel
+    const openPythonLearningCommand = vscode.commands.registerCommand('GemiStudi.openPythonLearning', () => {
+        pythonLearningProvider.open();
+    });
+    context.subscriptions.push(disposable, openPythonLearningCommand);
 }
 // This method is called when your extension is deactivated
 function deactivate() { }
