@@ -43,7 +43,7 @@ export class PythonLearningProvider {
   }
 
   private _setupMessageListeners() {
-    if (!this._panel) return;
+    if (!this._panel) {return};
 
     this._panel.webview.onDidReceiveMessage(async (message) => {
       switch (message.command) {
