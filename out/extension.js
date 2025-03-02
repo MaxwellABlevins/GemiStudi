@@ -34,10 +34,10 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
-exports.deactivate = deactivate;
+// The module 'vscode' contains the VS Code extensibility API
+// Import the module and reference it with the alias vscode in your code below
 const vscode = __importStar(require("vscode"));
-<<<<<<< HEAD
-//import { open } from 'fs';
+const pythonLearningProvider_1 = require("./webview/pythonLearningProvider");
 //importing Gemini API to read files from computer
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
@@ -49,28 +49,19 @@ async function callGemini(prompt) {
     console.log(result.response.text());
     return await result.response.text();
 }
-=======
-const pythonLearningProvider_1 = require("./webview/pythonLearningProvider");
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
->>>>>>> 04f928f37d0e637ca20c27aaab94e87ba1b1f46b
 function activate(context) {
+    // Use the console to output diagnostic information (console.log) and errors (console.error)
+    // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "Practice" is now active!');
-<<<<<<< HEAD
-    const disposable = vscode.commands.registerCommand('GemiStudi.helloWorld', async () => {
-        const message = await callGemini("Explain how 1+1=2");
-        vscode.window.showInformationMessage(message);
-=======
     // Create an instance of PythonLearningProvider
     const pythonLearningProvider = new pythonLearningProvider_1.PythonLearningProvider(context);
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
-    const disposable = vscode.commands.registerCommand('GemiStudi.helloWorld', () => {
+    const disposable = vscode.commands.registerCommand('GemiStudi.helloWorld', async () => {
         // The code you place here will be executed every time your command is executed
-        // Display a message box to the user
-        vscode.window.showInformationMessage('Hello World from ExtensionPractice!');
->>>>>>> 04f928f37d0e637ca20c27aaab94e87ba1b1f46b
+        const message = await callGemini("Explain how 1+1=2");
+        vscode.window.showInformationMessage(message);
     });
     // Register a command to open the Python Learning panel
     const openPythonLearningCommand = vscode.commands.registerCommand('GemiStudi.openPythonLearning', () => {
@@ -92,5 +83,4 @@ function activate(context) {
     });
     context.subscriptions.push(disposable, openPythonLearningCommand, learnWithSelectionCommand);
 }
-function deactivate() { }
 //# sourceMappingURL=extension.js.map
