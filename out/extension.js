@@ -39,14 +39,13 @@ exports.deactivate = deactivate;
 // Import the module and reference it with the alias vscode in your code below
 const vscode = __importStar(require("vscode"));
 const pythonLearningProvider_1 = require("./webview/pythonLearningProvider");
-//import { open } from 'fs';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 function activate(context) {
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "Practice" is now active!');
-    //Create an of PythonLearningProvider
+    // Create an instance of PythonLearningProvider
     const pythonLearningProvider = new pythonLearningProvider_1.PythonLearningProvider(context);
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
@@ -60,7 +59,21 @@ function activate(context) {
     const openPythonLearningCommand = vscode.commands.registerCommand('GemiStudi.openPythonLearning', () => {
         pythonLearningProvider.open();
     });
-    context.subscriptions.push(disposable, openPythonLearningCommand);
+    // Register a command to open Python Learning with selected text
+    const learnWithSelectionCommand = vscode.commands.registerCommand('GemiStudi.learnWithSelection', () => {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const selection = editor.selection;
+            const selectedText = editor.document.getText(selection);
+            if (selectedText) {
+                pythonLearningProvider.open(selectedText);
+            }
+            else {
+                pythonLearningProvider.open();
+            }
+        }
+    });
+    context.subscriptions.push(disposable, openPythonLearningCommand, learnWithSelectionCommand);
 }
 // This method is called when your extension is deactivated
 function deactivate() { }
