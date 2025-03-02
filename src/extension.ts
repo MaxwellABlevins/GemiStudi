@@ -27,7 +27,6 @@ async function callGemini(prompt: string): Promise<string> {
 
 export function activate(context: vscode.ExtensionContext) {
 
-<<<<<<< HEAD
 	console.log('Congratulations, your extension "Practice" is now active!');
 
 
@@ -49,7 +48,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposable, openPythonLearningCommand);
 });
-=======
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "Practice" is now active!');
@@ -86,7 +84,6 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     context.subscriptions.push(disposable, openPythonLearningCommand, learnWithSelectionCommand);
->>>>>>> 04f928f37d0e637ca20c27aaab94e87ba1b1f46b
 }
 
 export function deactivate() {}
