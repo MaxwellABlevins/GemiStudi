@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
+//import { open } from 'fs';
 //importing Gemini API to read files from computer
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
@@ -53,7 +54,11 @@ function activate(context) {
         const message = await callGemini("Explain how 1+1=2");
         vscode.window.showInformationMessage(message);
     });
-    context.subscriptions.push(disposable);
+    // Register a command to open the Python Learning panel
+    const openPythonLearningCommand = vscode.commands.registerCommand('GemiStudi.openPythonLearning', () => {
+        pythonLearningProvider.open();
+    });
+    context.subscriptions.push(disposable, openPythonLearningCommand);
 }
 function deactivate() { }
 //# sourceMappingURL=extension.js.map
