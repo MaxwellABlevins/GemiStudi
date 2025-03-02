@@ -111,95 +111,27 @@ export class PythonLearningProvider {
     const initialCode = this._selectedText || 'print("Hello, Python!")';
     
     return `<!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Python Learning</title>
-        <style>
-          body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            padding: 20px;
-          }
-          .container {
-            display: grid;
-            grid-template-rows: auto 1fr auto;
-            height: 90vh;
-          }
-          .editor-container {
-            display: flex;
-            flex-direction: column;
-            margin-top: 20px;
-          }
-          #editor {
-            height: 200px;
-            border: 1px solid #ccc;
-            font-family: monospace;
-            padding: 10px;
-            background-color: var(--vscode-editor-background);
-            color: var(--vscode-editor-foreground);
-            resize: none;
-          }
-          #output {
-            margin-top: 10px;
-            height: 100px;
-            overflow: auto;
-            padding: 10px;
-            background-color: var(--vscode-terminal-background);
-            color: var(--vscode-terminal-foreground);
-            font-family: monospace;
-          }
-          button {
-            margin-top: 10px;
-            background-color: var(--vscode-button-background);
-            color: var(--vscode-button-foreground);
-            border: none;
-            padding: 6px 12px;
-            cursor: pointer;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h1>Python Interactive Learning</h1>
-          <div class="editor-container">
-            <h3>Try Python code here:</h3>
-            <textarea id="editor">${initialCode}</textarea>
-            <button id="runButton">Run Code</button>
-            <pre id="output">// Output will appear here</pre>
-          </div>
-        </div>
-
-        <script>
-          (function() {
-            const vscode = acquireVsCodeApi();
-            
-            // Let the extension know the webview is ready
-            vscode.postMessage({ command: 'ready' });
-            
-            document.getElementById('runButton').addEventListener('click', () => {
-              const code = document.getElementById('editor').value;
-              vscode.postMessage({
-                command: 'runCode',
-                code: code
-              });
-            });
-
-            // Handle messages from the extension
-            window.addEventListener('message', event => {
-              const message = event.data;
-              switch(message.command) {
-                case 'executionResult':
-                  document.getElementById('output').textContent = message.output;
-                  break;
-                case 'updateEditor':
-                  document.getElementById('editor').value = message.code;
-                  break;
-              }
-            });
-          })();
-        </script>
-      </body>
-      </html>`;
+      <div class="w-[1440px] h-[1024px] relative bg-white  overflow-hidden">
+  <div class="w-[443px] h-[233px] left-[568px] top-[435px] absolute flex-col justify-center items-start inline-flex">
+    <div class="w-[117px] text-black text-[10px] font-normal font-['Inter']">Response to question</div>
+    <div class="w-[443px] h-[221px] p-2.5 rounded-[5px] border border-black justify-start items-start gap-2.5 inline-flex">
+      <div class="text-[#9c9797] text-xs font-normal font-['Inter']">Enter text</div>
+    </div>
+  </div>
+  <div class="w-[443px] h-[135px] left-[568px] top-[287px] absolute flex-col justify-center items-start gap-2.5 inline-flex">
+    <div class="w-[136px] h-[18px] text-black text-base font-normal font-['Inter']">Gemini Response</div>
+    <div data-svg-wrapper>
+    <svg width="443" height="107" viewBox="0 0 443 107" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0.5" y="0.5" width="442" height="106" rx="4.5" stroke="black"/>
+    </svg>
+    </div>
+  </div>
+  <div data-svg-wrapper class="left-[568px] top-[702px] absolute">
+  <svg width="443" height="79" viewBox="0 0 443 79" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0.5" y="0.5" width="442" height="78" rx="4.5" stroke="black"/>
+  </svg>
+  </div>
+  <div class="left-[568px] top-[681px] absolute text-black text-base font-normal font-['Inter']">Output</div>
+</div>`;
   }
 }
