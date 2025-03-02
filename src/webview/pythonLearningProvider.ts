@@ -1,19 +1,26 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+const { spawnSync } = require('child_process');
 
 export class PythonLearningProvider {
   public static readonly viewType = 'pythonLearningView';
   private _panel: vscode.WebviewPanel | undefined;
   private _context: vscode.ExtensionContext;
+  private _selectedText: string | undefined;
 
   constructor(context: vscode.ExtensionContext) {
     this._context = context;
   }
 
-  public open() {
-    // If we already have a panel, show it
+  public open(selectedText?: string) {
+    this._selectedText = selectedText;
+    
+    // If we already have a panel, show it and update content if needed
     if (this._panel) {
       this._panel.reveal(vscode.ViewColumn.One);
+      if (selectedText) {
+        this._updateContent();
+      }
       return;
     }
 
@@ -40,6 +47,26 @@ export class PythonLearningProvider {
 
     // Set up message handling
     this._setupMessageListeners();
+    
+    // Ensure the webview is initialized before updating content
+    // This ensures the event listeners are set up before we try to update content
+    this._panel.webview.onDidReceiveMessage(message => {
+      if (message.command === 'ready' && this._selectedText) {
+        this._updateContent();
+      }
+    });
+  }
+
+  private _updateContent() {
+    if (!this._panel) return;
+    
+    // Update the editor content with selected text if available
+    if (this._selectedText) {
+      this._panel.webview.postMessage({
+        command: 'updateEditor',
+        code: this._selectedText
+      });
+    }
   }
 
   private _setupMessageListeners() {
@@ -56,7 +83,22 @@ export class PythonLearningProvider {
 
   private async _runCode(code: string) {
     // For now, we'll just simulate running the code
-    const output = `Running Python code:\n${code}\n\nSimulated output: Hello, Python!`;
+    // Execute the Python code
+    let output: string;
+    try {
+      const pythonProcess = spawnSync('python', ['-c', code], { encoding: 'utf8' });
+      
+      const stdout = pythonProcess.stdout || '';
+      const stderr = pythonProcess.stderr || '';
+      
+      if (stderr) {
+        output = `Output:\n${stdout}\nError:\n${stderr}`;
+      } else {
+        output = `Output:\n${stdout}`;
+      }
+    } catch (err: any) {
+      output = `Failed to execute Python code: ${err.message}`;
+    }
     
     this._panel?.webview.postMessage({
       command: 'executionResult',
@@ -65,6 +107,9 @@ export class PythonLearningProvider {
   }
 
   private _getHtmlForWebview(): string {
+    // Prepare initial code - use selected text if available
+    const initialCode = this._selectedText || 'print("Hello, Python!")';
+    
     return `<!DOCTYPE html>
       <html lang="en">
       <head>
@@ -119,7 +164,7 @@ export class PythonLearningProvider {
           <h1>Python Interactive Learning</h1>
           <div class="editor-container">
             <h3>Try Python code here:</h3>
-            <textarea id="editor">print("Hello, Python!")</textarea>
+            <textarea id="editor">${initialCode}</textarea>
             <button id="runButton">Run Code</button>
             <pre id="output">// Output will appear here</pre>
           </div>
@@ -128,6 +173,9 @@ export class PythonLearningProvider {
         <script>
           (function() {
             const vscode = acquireVsCodeApi();
+            
+            // Let the extension know the webview is ready
+            vscode.postMessage({ command: 'ready' });
             
             document.getElementById('runButton').addEventListener('click', () => {
               const code = document.getElementById('editor').value;
@@ -140,8 +188,13 @@ export class PythonLearningProvider {
             // Handle messages from the extension
             window.addEventListener('message', event => {
               const message = event.data;
-              if (message.command === 'executionResult') {
-                document.getElementById('output').textContent = message.output;
+              switch(message.command) {
+                case 'executionResult':
+                  document.getElementById('output').textContent = message.output;
+                  break;
+                case 'updateEditor':
+                  document.getElementById('editor').value = message.code;
+                  break;
               }
             });
           })();

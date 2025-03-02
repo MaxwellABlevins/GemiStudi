@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
+<<<<<<< HEAD
 //import { open } from 'fs';
 //importing Gemini API to read files from computer
 const dotenv = __importStar(require("dotenv"));
@@ -48,17 +49,48 @@ async function callGemini(prompt) {
     console.log(result.response.text());
     return await result.response.text();
 }
+=======
+const pythonLearningProvider_1 = require("./webview/pythonLearningProvider");
+// This method is called when your extension is activated
+// Your extension is activated the very first time the command is executed
+>>>>>>> 04f928f37d0e637ca20c27aaab94e87ba1b1f46b
 function activate(context) {
     console.log('Congratulations, your extension "Practice" is now active!');
+<<<<<<< HEAD
     const disposable = vscode.commands.registerCommand('GemiStudi.helloWorld', async () => {
         const message = await callGemini("Explain how 1+1=2");
         vscode.window.showInformationMessage(message);
+=======
+    // Create an instance of PythonLearningProvider
+    const pythonLearningProvider = new pythonLearningProvider_1.PythonLearningProvider(context);
+    // The command has been defined in the package.json file
+    // Now provide the implementation of the command with registerCommand
+    // The commandId parameter must match the command field in package.json
+    const disposable = vscode.commands.registerCommand('GemiStudi.helloWorld', () => {
+        // The code you place here will be executed every time your command is executed
+        // Display a message box to the user
+        vscode.window.showInformationMessage('Hello World from ExtensionPractice!');
+>>>>>>> 04f928f37d0e637ca20c27aaab94e87ba1b1f46b
     });
     // Register a command to open the Python Learning panel
     const openPythonLearningCommand = vscode.commands.registerCommand('GemiStudi.openPythonLearning', () => {
         pythonLearningProvider.open();
     });
-    context.subscriptions.push(disposable, openPythonLearningCommand);
+    // Register a command to open Python Learning with selected text
+    const learnWithSelectionCommand = vscode.commands.registerCommand('GemiStudi.learnWithSelection', () => {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const selection = editor.selection;
+            const selectedText = editor.document.getText(selection);
+            if (selectedText) {
+                pythonLearningProvider.open(selectedText);
+            }
+            else {
+                pythonLearningProvider.open();
+            }
+        }
+    });
+    context.subscriptions.push(disposable, openPythonLearningCommand, learnWithSelectionCommand);
 }
 function deactivate() { }
 //# sourceMappingURL=extension.js.map

@@ -36,17 +36,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PythonLearningProvider = void 0;
 const vscode = __importStar(require("vscode"));
 const path = __importStar(require("path"));
+const { spawnSync } = require('child_process');
 class PythonLearningProvider {
     static viewType = 'pythonLearningView';
     _panel;
     _context;
+    _selectedText;
     constructor(context) {
         this._context = context;
     }
-    open() {
-        // If we already have a panel, show it
+    open(selectedText) {
+        this._selectedText = selectedText;
+        // If we already have a panel, show it and update content if needed
         if (this._panel) {
             this._panel.reveal(vscode.ViewColumn.One);
+            if (selectedText) {
+                this._updateContent();
+            }
             return;
         }
         // Otherwise, create a new panel
@@ -64,6 +70,24 @@ class PythonLearningProvider {
         });
         // Set up message handling
         this._setupMessageListeners();
+        // Ensure the webview is initialized before updating content
+        // This ensures the event listeners are set up before we try to update content
+        this._panel.webview.onDidReceiveMessage(message => {
+            if (message.command === 'ready' && this._selectedText) {
+                this._updateContent();
+            }
+        });
+    }
+    _updateContent() {
+        if (!this._panel)
+            return;
+        // Update the editor content with selected text if available
+        if (this._selectedText) {
+            this._panel.webview.postMessage({
+                command: 'updateEditor',
+                code: this._selectedText
+            });
+        }
     }
     _setupMessageListeners() {
         if (!this._panel)
@@ -78,13 +102,30 @@ class PythonLearningProvider {
     }
     async _runCode(code) {
         // For now, we'll just simulate running the code
-        const output = `Running Python code:\n${code}\n\nSimulated output: Hello, Python!`;
+        // Execute the Python code
+        let output;
+        try {
+            const pythonProcess = spawnSync('python', ['-c', code], { encoding: 'utf8' });
+            const stdout = pythonProcess.stdout || '';
+            const stderr = pythonProcess.stderr || '';
+            if (stderr) {
+                output = `Output:\n${stdout}\nError:\n${stderr}`;
+            }
+            else {
+                output = `Output:\n${stdout}`;
+            }
+        }
+        catch (err) {
+            output = `Failed to execute Python code: ${err.message}`;
+        }
         this._panel?.webview.postMessage({
             command: 'executionResult',
             output: output
         });
     }
     _getHtmlForWebview() {
+        // Prepare initial code - use selected text if available
+        const initialCode = this._selectedText || 'print("Hello, Python!")';
         return `<!DOCTYPE html>
       <html lang="en">
       <head>
@@ -139,7 +180,7 @@ class PythonLearningProvider {
           <h1>Python Interactive Learning</h1>
           <div class="editor-container">
             <h3>Try Python code here:</h3>
-            <textarea id="editor">print("Hello, Python!")</textarea>
+            <textarea id="editor">${initialCode}</textarea>
             <button id="runButton">Run Code</button>
             <pre id="output">// Output will appear here</pre>
           </div>
@@ -148,6 +189,9 @@ class PythonLearningProvider {
         <script>
           (function() {
             const vscode = acquireVsCodeApi();
+            
+            // Let the extension know the webview is ready
+            vscode.postMessage({ command: 'ready' });
             
             document.getElementById('runButton').addEventListener('click', () => {
               const code = document.getElementById('editor').value;
@@ -160,8 +204,13 @@ class PythonLearningProvider {
             // Handle messages from the extension
             window.addEventListener('message', event => {
               const message = event.data;
-              if (message.command === 'executionResult') {
-                document.getElementById('output').textContent = message.output;
+              switch(message.command) {
+                case 'executionResult':
+                  document.getElementById('output').textContent = message.output;
+                  break;
+                case 'updateEditor':
+                  document.getElementById('editor').value = message.code;
+                  break;
               }
             });
           })();

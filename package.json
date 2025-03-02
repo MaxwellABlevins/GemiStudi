@@ -7,7 +7,8 @@
     "vscode": "^1.97.2"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Education"
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
@@ -20,8 +21,21 @@
       {
         "command": "GemiStudi.openPythonLearning",
         "title": "Open Python Learning Environment"
+      },
+      {
+        "command": "GemiStudi.learnWithSelection",
+        "title": "Learn with Python Environment"
       }
-    ]
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "editorHasSelection",
+          "command": "GemiStudi.learnWithSelection",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
