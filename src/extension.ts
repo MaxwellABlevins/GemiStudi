@@ -7,55 +7,38 @@ import { PythonLearningProvider } from './webview/pythonLearningProvider';
 import * as dotenv from 'dotenv';
 dotenv.config();
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { createGemini } from './useGemini';
+import { create } from 'domain';
 
 
-const genAI = new GoogleGenerativeAI("AIzaSyBJmxRSvjp32ds0YTOphkYBF-SF2-E-ERc");
-
-async function callGemini(prompt: string): Promise<string> {
-	const model = genAI.getGenerativeModel({model: 'gemini-2.0-flash'});
-
-	const result = await model.generateContent(prompt);
-	console.log(result.response.text());
-
-	return await result.response.text();
-	}
-
+const gemini = new createGemini();
 
 export function activate(context: vscode.ExtensionContext) {
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "Practice" is now active!');
-
-	// Create an instance of PythonLearningProvider
+	const gemPromptDocu: string = "I am going to give you python code. I am giving you this python code because the user would like to learn more about all the topics that are included in it. I need you to go through all of it and find the key points of what the lines of code are trying to accomplish. Keep in mind they may have some errors in the code they are trying to solve. In the case of these errors I want you to find the key concept they are trying to employ in python. When you get all these key concepts, I want you to find the documentation for the concepts and tools the python code is trying to employ. I want this documentation to solely focus on highly rated stack over flow threads, official documentation from the library of any tool that is being used or from official python documentation, or geeksforgeeks. I want all the documentation to be from just those three things I mentioned and nothing else. All I want your response to be is a list of the websites with a one sentence or less description. DO NOT BE CONVERSATION IN RESPONSE JUST GIVE THE LIST WITH A DESCRIPTION OF EACH LINK ABOVE IT. Here is the code:";
+	const gemini = new createGemini();
 	const pythonLearningProvider = new PythonLearningProvider(context);
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('GemiStudi.helloWorld', async () => {
-		// The code you place here will be executed every time your command is executed
-		const message = await callGemini("Explain how 1+1=2");
-		vscode.window.showInformationMessage(message);
-	});
 
 	// Register a command to open the Python Learning panel
 	const openPythonLearningCommand = vscode.commands.registerCommand('GemiStudi.openPythonLearning', () => {
+		
 		pythonLearningProvider.open();
 	});
 
 	// Register a command to open Python Learning with selected text
-	const learnWithSelectionCommand = vscode.commands.registerCommand('GemiStudi.learnWithSelection', () => {
+	const learnWithSelectionCommand = vscode.commands.registerCommand('GemiStudi.learnWithSelection', async () => {
+		const pythonLearningProvider = new PythonLearningProvider(context);
 		const editor = vscode.window.activeTextEditor;
 		if (editor) {
 			const selection = editor.selection;
 			const selectedText = editor.document.getText(selection);
 			if (selectedText) {
-				pythonLearningProvider.open(selectedText);
+				const documentation: string = await gemini.callGemini(gemPromptDocu + selectedText);
+				pythonLearningProvider.open(documentation);
 			} else {
 				pythonLearningProvider.open();
 			}
 		}
 	});
 
-	context.subscriptions.push(disposable, openPythonLearningCommand, learnWithSelectionCommand);
+	context.subscriptions.push(openPythonLearningCommand, learnWithSelectionCommand);
 }
