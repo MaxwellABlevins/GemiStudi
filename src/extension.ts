@@ -1,5 +1,9 @@
+<<<<<<<<< Temporary merge branch 1
+
+=========
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
+>>>>>>>>> Temporary merge branch 2
 import * as vscode from 'vscode';
 import { PythonLearningProvider } from './webview/pythonLearningProvider';
 
@@ -23,6 +27,29 @@ async function callGemini(prompt: string): Promise<string> {
 
 export function activate(context: vscode.ExtensionContext) {
 
+<<<<<<<<< Temporary merge branch 1
+	console.log('Congratulations, your extension "Practice" is now active!');
+
+
+	const disposable = vscode.commands.registerCommand('GemiStudi.helloWorld', async () => {
+		const message = await callGemini("Explain how 1+1=2");
+		vscode.window.showInformationMessage(message);
+	//Create an of PythonLearningProvider
+	const pythonLearningProvider = new PythonLearningProvider(context);
+
+
+	const disposable = vscode.commands.registerCommand('GemiStudi.helloWorld', () => {
+		
+		vscode.window.showInformationMessage('Hello World from ExtensionPractice!');
+	});
+
+	const openPythonLearningCommand = vscode.commands.registerCommand('GemiStudi.openPythonLearning', () => {
+		pythonLearningProvider.open();
+	});
+
+	context.subscriptions.push(disposable, openPythonLearningCommand);
+});
+=========
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "Practice" is now active!');
@@ -58,5 +85,6 @@ const learnWithSelectionCommand = vscode.commands.registerCommand('GemiStudi.lea
     }
 });
 
-context.subscriptions.push(disposable, openPythonLearningCommand, learnWithSelectionCommand);
+    context.subscriptions.push(disposable, openPythonLearningCommand, learnWithSelectionCommand);
+>>>>>>>>> Temporary merge branch 2
 }
