@@ -16,7 +16,7 @@
       {
         "command": "GemiStudi.helloWorld",
         "title": "Hello World"
-      }, 
+      },
       {
         "command": "GemiStudi.openPythonLearning",
         "title": "Open Python Learning Environment"
@@ -43,6 +43,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.22.0"
+    "@google/generative-ai": "^0.22.0",
+    "dotenv": "^16.4.7"
   }
 }
