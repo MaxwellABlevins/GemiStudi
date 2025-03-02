@@ -90,8 +90,10 @@ class PythonLearningProvider {
         }
     }
     _setupMessageListeners() {
-        if (!this._panel)
+        if (!this._panel) {
             return;
+        }
+        ;
         this._panel.webview.onDidReceiveMessage(async (message) => {
             switch (message.command) {
                 case 'runCode':

@@ -59,3 +59,4 @@ const learnWithSelectionCommand = vscode.commands.registerCommand('GemiStudi.lea
 });
 
 context.subscriptions.push(disposable, openPythonLearningCommand, learnWithSelectionCommand);
+}
