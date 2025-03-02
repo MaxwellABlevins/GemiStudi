@@ -1,25 +1,21 @@
 
 import * as dotenv from 'dotenv';
-dotenv.config();
 import { GoogleGenerativeAI } from '@google/generative-ai';
+dotenv.config({ path: '.env.local'});
 
 
 export class createGemini{
-    
-    private apiKey: string;
-    private static genAI:any;
-
-    public constructor(apiKey: string){
-        this.apiKey = apiKey;
-        createGemini.genAI = new GoogleGenerativeAI(this.apiKey);
-    }
-    
 
     public async callGemini(input:string): Promise<string>{
-        const model = createGemini.genAI.getGenerativeModel({model: 'gemini-2.0-flash'});
+        const apiKey: string = "AIzaSyBJmxRSvjp32ds0YTOphkYBF-SF2-E-ERc";
+        if (!apiKey) {
+            throw new Error('GEMINI_API_KEY is not defined');
+        }
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({model: 'gemini-2.0-flash'});
+        
 
 	    const result = await model.generateContent(input);
-	    console.log(result.response.text());
 
 	    return await result.response.text().toString();
     }
