@@ -79,8 +79,9 @@ class PythonLearningProvider {
         });
     }
     _updateContent() {
-        if (!this._panel)
+        if (!this._panel) {
             return;
+        }
         // Update the editor content with selected text if available
         if (this._selectedText) {
             this._panel.webview.postMessage({
@@ -93,7 +94,6 @@ class PythonLearningProvider {
         if (!this._panel) {
             return;
         }
-        ;
         this._panel.webview.onDidReceiveMessage(async (message) => {
             switch (message.command) {
                 case 'runCode':
@@ -126,7 +126,6 @@ class PythonLearningProvider {
         });
     }
     _getHtmlForWebview() {
-        // Prepare initial code - use selected text if available
         const initialCode = this._selectedText || 'print("Hello, Python!")';
         return `<!DOCTYPE html>
       <html lang="en">
@@ -149,6 +148,29 @@ class PythonLearningProvider {
             flex-direction: column;
             margin-top: 20px;
           }
+          /* Gemini Response section */
+          .gemini-container {
+            margin-bottom: 20px;
+          }
+          #geminiResponse {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            overflow: auto;
+            background-color: var(--vscode-editor-background);
+            color: var(--vscode-editor-foreground);
+          }
+          #questionInput {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            background-color: var(--vscode-input-background);
+            color: var(--vscode-input-foreground);
+          }
+          /* Python editor styling */
           #editor {
             height: 200px;
             border: 1px solid #ccc;
@@ -174,12 +196,23 @@ class PythonLearningProvider {
             border: none;
             padding: 6px 12px;
             cursor: pointer;
+            margin-right: 5px;
           }
         </style>
       </head>
       <body>
         <div class="container">
           <h1>Python Interactive Learning</h1>
+          
+          <!-- Gemini AI section -->
+          <div class="gemini-container">
+            <h3>Gemini Response</h3>
+            <div id="geminiResponse">Ask Gemini a question about Python to get help.</div>
+            <input type="text" id="questionInput" placeholder="Ask a Python question...">
+            <button id="askButton">Ask Gemini</button>
+          </div>
+          
+          <!-- Python Editor section -->
           <div class="editor-container">
             <h3>Try Python code here:</h3>
             <textarea id="editor">${initialCode}</textarea>
@@ -195,12 +228,26 @@ class PythonLearningProvider {
             // Let the extension know the webview is ready
             vscode.postMessage({ command: 'ready' });
             
+            // Run Python code
             document.getElementById('runButton').addEventListener('click', () => {
               const code = document.getElementById('editor').value;
               vscode.postMessage({
                 command: 'runCode',
                 code: code
               });
+            });
+
+            // Ask Gemini
+            document.getElementById('askButton').addEventListener('click', () => {
+              const question = document.getElementById('questionInput').value;
+              if (question.trim()) {
+                // Show loading indicator
+                document.getElementById('geminiResponse').textContent = 'Loading...';
+                vscode.postMessage({
+                  command: 'askGemini',
+                  question: question
+                });
+              }
             });
 
             // Handle messages from the extension
@@ -212,6 +259,9 @@ class PythonLearningProvider {
                   break;
                 case 'updateEditor':
                   document.getElementById('editor').value = message.code;
+                  break;
+                case 'geminiResponse':
+                  document.getElementById('geminiResponse').textContent = message.response;
                   break;
               }
             });
