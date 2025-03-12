@@ -1,1 +1,1 @@
-Super Awesome Extension.
+Publisher: GemiStudi

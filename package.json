@@ -1,6 +1,7 @@
 {
-  "name": "Practice",
-  "displayName": "ExtensionPractice",
+  "name": "GemiStudi",
+  "publisher": "Maxwell Blevins",
+  "displayName": "GemiStudi",
   "description": "First Extension for practice and familiarity",
   "version": "0.0.1",
   "engines": {
